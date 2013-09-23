@@ -8,6 +8,7 @@ import dns.resolver
 import dns.rdataclass
 import dns.rdatatype
 import dns.flags
+import dns.exception
 
 class Server:
     def __init__(self):
@@ -73,6 +74,10 @@ class Server:
                 print >>sys.stderr, "> NXDOMAIN"
                 response.set_rcode(dns.rcode.NXDOMAIN)
                 break
+            except dns.exception.Timeout:
+                print >>sys.stderr, "> Timeout"
+                # We just drop the query here, causing a timeout for the client
+                return None
 
             if rdata is not None:
                 print >>sys.stderr, ">", str(rdata).replace("\n", "\n  ")
