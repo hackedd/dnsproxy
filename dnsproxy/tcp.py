@@ -3,6 +3,7 @@ import socket
 
 from .server import Server
 
+
 class TCPServer(Server):
     def __init__(self, address="", port=53):
         Server.__init__(self)
@@ -46,8 +47,9 @@ class TCPServer(Server):
             if response:
                 self.socket.sendall(response)
             else:
-                print >>sys.stderr, "Query from %s:%d (TCP) not resolved" % socket.getpeername()
-                print >>sys.stderr, " ", repr(packet)
+                print >>sys.stderr, "Query from %s:%d (TCP) not resolved" % \
+                                    socket.getpeername()
+                print >>sys.stderr, " ", repr(self.buffers[i])
 
             del self.clients[i]
             del self.buffers[i]

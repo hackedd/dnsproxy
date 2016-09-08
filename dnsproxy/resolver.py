@@ -1,4 +1,4 @@
-class Resolver:
+class Resolver(object):
     def resolve_a(self, qname, ipv6=False):
         return None
 

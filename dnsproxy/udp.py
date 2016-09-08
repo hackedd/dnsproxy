@@ -3,6 +3,7 @@ import socket
 
 from .server import Server
 
+
 class UDPServer(Server):
     def __init__(self, address="", port=53):
         Server.__init__(self)

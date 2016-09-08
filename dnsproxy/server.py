@@ -10,8 +10,10 @@ import dns.rdatatype
 import dns.flags
 import dns.exception
 
-class Server:
+
+class Server(object):
     def __init__(self):
+        super(Server, self).__init__()
         self.resolvers = []
         self.fallback = dns.resolver.Resolver()
 
@@ -48,7 +50,8 @@ class Server:
             if rdata is not None:
                 return rdata
 
-        # None of the resolvers matched. Try resolving using an actual DNS server.
+        # None of the resolvers matched. Try resolving using an
+        # actual DNS server.
         answer = self.fallback.query(qname, rdtype, rdclass)
         return answer.rrset
 
@@ -61,8 +64,8 @@ class Server:
         for rrset in query.question:
             print >>sys.stderr, "<", rrset
 
-            qname   = rrset.name
-            rdtype  = dns.rdatatype.to_text(rrset.rdtype)
+            qname = rrset.name
+            rdtype = dns.rdatatype.to_text(rrset.rdtype)
             rdclass = dns.rdataclass.to_text(rrset.rdclass)
 
             try:
@@ -83,7 +86,8 @@ class Server:
                 print >>sys.stderr, ">", str(rdata).replace("\n", "\n  ")
 
                 if isinstance(rdata, str):
-                    rdata = dns.rdata.from_text(rrset.rdclass, rrset.rdtype, rdata)
+                    rdata = dns.rdata.from_text(rrset.rdclass, rrset.rdtype,
+                                                rdata)
 
                 if isinstance(rdata, dns.rrset.RRset):
                     answer = rdata
@@ -96,6 +100,7 @@ class Server:
                 response.answer.append(answer)
 
         return response.to_wire()
+
 
 def mainloop(servers):
     timeout = 1.0
