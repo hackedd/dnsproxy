@@ -1,29 +1,10 @@
 import sys
 from optparse import OptionParser
 
-from .resolver import Resolver
+from .resolver import OverrideResolver
 from .server import mainloop
 from .tcp import TCPServer
 from .udp import UDPServer
-
-
-class OverrideResolver(Resolver):
-    def __init__(self, overrides=None, ipv6=False):
-        self.overrides = overrides or dict()
-        self.ipv6 = ipv6
-
-    def resolve_a(self, qname, ipv6=False):
-        if ipv6 != self.ipv6:
-            return None
-
-        key = str(qname).lower().rstrip(".")
-
-        # if key not in self.overrides:
-        #     return None
-
-        # return "%s 123 IN %s %s" % (qname, "AAAA" if ipv6 else "A",
-        #                             self.overrides[key])
-        return self.overrides.get(key)
 
 
 def main():
@@ -49,7 +30,7 @@ def main():
         for name in parts[:-1]:
             key = name.lower().rstrip(".")
             print >>sys.stderr, "Adding override %s => %s" % (key, addr)
-            override.overrides[key] = addr
+            override.add_override(key, addr)
 
     server_name = "UDP and TCP" if options.tcp else "UDP"
     address, port = options.bind, int(options.port)
