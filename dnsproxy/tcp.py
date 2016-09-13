@@ -1,12 +1,13 @@
 import sys
 import socket
+import struct
 
 from .server import Server
 
 
 class TCPServer(Server):
     def __init__(self, address="", port=53):
-        Server.__init__(self)
+        super(TCPServer, self).__init__()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind((address, port))
 
@@ -28,29 +29,45 @@ class TCPServer(Server):
     def write_sockets(self):
         return []
 
+    def unpack_message(self, buf):
+        length, = struct.unpack("!H", buf[:2])
+        return length, buf[2:]
+
+    def pack_message(self, buf):
+        return struct.pack("!H", len(buf)) + buf
+
     def complete(self, buffer):
-        # TODO: Determine if TCP DNS Message is complete
-        return True
+        length, message = self.unpack_message(buffer)
+        return len(message) >= length
 
     def do_read(self, socket):
         if socket == self.socket:
             client, address = socket.accept()
             self.clients.append(client)
             self.buffers.append("")
-        else:
-            i = self.clients.index(socket)
-            self.buffers[i] += socket.recv(4096)
-            if not self.complete(self.buffers[i]):
-                return
+            return
 
-            response = self.respond(self.buffers[i])
+        i = self.clients.index(socket)
+        self.buffers[i] += socket.recv(4096)
+        buf = self.buffers[i]
+
+        if self.complete(buf):
+            length, message = self.unpack_message(buf)
+
+            response = self.respond(message)
             if response:
-                self.socket.sendall(response)
+                socket.sendall(self.pack_message(response))
             else:
                 print >>sys.stderr, "Query from %s:%d (TCP) not resolved" % \
                                     socket.getpeername()
-                print >>sys.stderr, " ", repr(self.buffers[i])
+                print >>sys.stderr, " ", repr(buf)
 
+            buf = buf[length + 2:]
+
+        # TODO: Detect socket close
+        if buf:
+            self.buffers[i] = buf
+        else:
             del self.clients[i]
             del self.buffers[i]
 

@@ -6,7 +6,7 @@ from .server import Server
 
 class UDPServer(Server):
     def __init__(self, address="", port=53):
-        Server.__init__(self)
+        super(UDPServer, self).__init__()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind((address, port))
 
