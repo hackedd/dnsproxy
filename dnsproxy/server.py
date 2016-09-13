@@ -57,9 +57,8 @@ class Server(object):
 
     def respond(self, data):
         query = dns.message.from_wire(data)
-        response = dns.message.make_response(query)
+        response = dns.message.make_response(query, recursion_available=True)
 
-        response.flags |= dns.flags.RA
 
         for rrset in query.question:
             print >>sys.stderr, "<", rrset
