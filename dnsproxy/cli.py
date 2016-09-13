@@ -3,8 +3,8 @@ from optparse import OptionParser
 
 from .resolver import Resolver
 from .server import mainloop
-from .udp import UDPServer
 from .tcp import TCPServer
+from .udp import UDPServer
 
 
 class OverrideResolver(Resolver):

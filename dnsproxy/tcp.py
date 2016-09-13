@@ -1,6 +1,6 @@
-import sys
 import socket
 import struct
+import sys
 
 from .server import Server
 

@@ -1,14 +1,14 @@
 import sys
 from select import select
 
+import dns.exception
+import dns.flags
 import dns.message
-import dns.rrset
 import dns.rdata
-import dns.resolver
 import dns.rdataclass
 import dns.rdatatype
-import dns.flags
-import dns.exception
+import dns.resolver
+import dns.rrset
 
 
 class Server(object):
